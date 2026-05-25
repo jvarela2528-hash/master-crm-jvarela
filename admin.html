@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER CRM HQ | Control Global & IA</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .admin-wrapper { display: flex; min-height: 100vh; background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; }
+        
+        .sidebar { width: 280px; background: #111; border-right: 1px solid #222; padding: 2rem 1.5rem; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+        .nav-item { padding: 0.8rem 1.2rem; border-radius: 12px; color: #888; cursor: pointer; transition: 0.3s; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 0.9rem; }
+        .nav-item:hover, .nav-item.active { background: #d4af3722; color: #d4af37; }
+        
+        .main-content { flex: 1; padding: 3rem; background: #0a0a0a; overflow-y: auto; }
+        .section { display: none; max-width: 1200px; margin: 0 auto; }
+        .section.active { display: block; }
+        
+        /* CRM Pipeline */
+        .crm-container { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
+        .crm-group-title { color: #d4af37; font-size: 1.2rem; margin-bottom: 1rem; border-bottom: 1px solid #222; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+        .crm-column { background: #161616; border-radius: 20px; border: 1px solid #222; padding: 1.5rem; }
+        .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+        .column-title { font-size: 0.8rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .lead-count { background: #d4af37; color: #000; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
+        
+        .crm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .crm-table th { text-align: left; padding: 1rem; color: #555; border-bottom: 1px solid #222; }
+        .crm-table td { padding: 1rem; border-bottom: 1px solid #1a1a1a; vertical-align: middle; }
+        
+        /* Status Badge Colors */
+        .status-select { background: #000; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; }
+        .status-select:focus { border-color: #d4af37; outline: none; }
+
+        .btn-mini { background: #222; color: #fff; border: 1px solid #333; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.75rem; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .btn-mini:hover { background: #333; border-color: #d4af37; }
+        .btn-mini.primary { background: #d4af37; color: #000; font-weight: 700; border: none; }
+        
+        .hidden-file { display: none !important; }
+
+        .marketing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; margin-top: 2rem; }
+        .ad-card { background: #161616; border-radius: 24px; border: 1px solid #222; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
+        .ad-visual-area { width: 100%; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid #333; position: relative; }
+        .fb-visual { height: 300px; }
+        .tiktok-visual { height: 450px; }
+        .ad-visual-area img { width: 100%; height: 100%; object-fit: contain; }
+        .ad-text-box { background: #1f1f1f; border-radius: 12px; padding: 1.2rem; font-size: 0.9rem; border-left: 3px solid #d4af37; min-height: 100px; }
+
+        /* Score Badges */
+        .score-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .score-hot { background: rgba(255, 69, 0, 0.15); color: #ff4500; border: 1px solid rgba(255, 69, 0, 0.3); }
+        .score-warm { background: rgba(212, 175, 55, 0.15); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .score-cold { background: rgba(52, 152, 219, 0.15); color: #3498db; border: 1px solid rgba(52, 152, 219, 0.3); }
+
+        /* AI Elements */
+        .ai-pulse { animation: pulseAI 1.5s infinite; color: #d4af37; }
+        @keyframes pulseAI { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        .shimmer { animation: shimmer 2s infinite linear; background: linear-gradient(90deg, #111 0%, #222 50%, #111 100%); background-size: 200% 100%; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* Mobile Responsive Enhancements */
+        .mobile-header { display: none; background: #111; padding: 1rem; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
+        .menu-toggle { background: transparent; border: 1px solid #333; color: #fff; padding: 0.5rem; border-radius: 8px; cursor: pointer; }
+        
+        .crm-table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .crm-table { min-width: 650px; }
+
+        @media (max-width: 1024px) {
+            .mobile-header { display: flex; }
+            .sidebar { position: fixed; left: -280px; z-index: 9999; transition: left 0.3s ease; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+            .sidebar.open { left: 0; }
+            .main-content { padding: 1.5rem; }
+            .marketing-grid { grid-template-columns: 1fr !important; }
+            .crm-container { gap: 1.5rem; }
+            .crm-column { padding: 1rem !important; }
+            header { flex-direction: column; align-items: flex-start !important; gap: 1rem; }
+            #clients-list { grid-template-columns: 1fr !important; }
+            .ad-footer { grid-template-columns: 1fr !important; }
+            .ad-footer button { grid-column: auto !important; }
+            .crm-group-title { font-size: 1rem; }
+            .crm-container > div:last-child { grid-template-columns: 1fr !important; }
+        }
+
+        @media (max-width: 640px) {
+            .main-content h1 { font-size: 1.5rem !important; }
+            .nav-item { font-size: 0.8rem; }
+            .btn-mini { padding: 0.4rem 0.6rem; font-size: 0.7rem; }
+        }
+        @media print {
+            body * { visibility: hidden; background: #fff !important; color: #000 !important; }
+            #doc-visual-preview, #doc-visual-preview * { visibility: visible; }
+            #doc-visual-preview { position: absolute; left: 0; top: 0; width: 100%; padding: 0 !important; margin: 0 !important; background: #fff !important; color: #000 !important; box-shadow: none !important; border: none !important; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="login-screen" class="login-overlay" style="position:fixed; inset:0; background:#0a0a0a; z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
+        <div style="background:#161616; padding:2.5rem; border-radius:24px; border:1px solid #222; text-align:center; width:100%; max-width:380px; box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+            <h2 style="color:#d4af37; margin-bottom:0.5rem; font-size:1.8rem; font-weight:800;">MASTER CRM HQ</h2>
+            <p style="color:#666; font-size:0.85rem; margin-bottom:2rem;">Control Global & Creación de Agentes IA</p>
+            <input type="password" id="admin-pass" placeholder="Contraseña Master" style="width:100%; padding:1rem; background:#000; border:1px solid #333; border-radius:12px; color:#fff; margin-bottom:1.5rem; outline:none; text-align:center; font-size:1rem;">
+            <button id="login-btn" style="width:100%; padding:1rem; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; border:none; border-radius:12px; font-weight:800; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 0 20px rgba(212,175,55,0.3);">Entrar al Master</button>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <h3 style="color:#d4af37; font-size:1.1rem; font-weight:800; margin:0;">MASTER CRM HQ</h3>
+        <button class="menu-toggle" id="menu-toggle-btn">☰</button>
+    </header>
+
+    <div class="admin-wrapper" id="admin-panel" style="display: none;">
+        <aside class="sidebar">
+            <h3 style="color:#d4af37; margin-bottom:2.5rem; padding-left:1rem; font-size:1.4rem; font-weight:800;">MASTER CRM HQ</h3>
+            <nav style="flex:1;">
+                <div class="nav-item active" data-section="leads-section">📊 Prospectos</div>
+                <div class="nav-item" data-section="stats-section">📈 Estadísticas en Vivo</div>
+                <div class="nav-item" data-section="marketing-section">📣 Creativos IA</div>
+                <div class="nav-item" data-section="docs-section">📄 Facturas & Contratos</div>
+                <div class="nav-item" data-section="clients-section">👥 Clientes & Permisos</div>
+                <div class="nav-item" data-section="archive-section">📂 Archivo Creativos</div>
+                <div class="nav-item" data-section="doc-archive-section">🗂️ Archivo Documentos</div>
+                <div class="nav-item" data-section="qr-section">🔲 QR Landing Page</div>
+                <div class="nav-item" data-section="cards-section">🪪 Tarjetas Digitales Pro</div>
+            </nav>
+            <div id="hq-back-nav" style="display:none; margin-top:2rem; padding-top:1rem; border-top:1px solid #222;">
+                <a href="/_HQ_MAESTRO_/index.html" style="text-decoration:none; color:var(--primary); font-size:0.8rem; font-weight:700; display:flex; align-items:center; gap:10px; opacity:0.7; transition:0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    🏰 VOLVER AL HQ MAESTRO
+                </a>
+            </div>
+            <button id="logout-btn" class="btn-mini" style="margin-top:auto; padding:1rem; justify-content:center; font-weight:700;">Cerrar Sesión</button>
+        </aside>
+
+        <main class="main-content">
+            <div id="ai-budget-alert" style="display:none; background:linear-gradient(135deg, #ff4757, #ff6b81); color:white; padding:15px 25px; border-radius:16px; margin-bottom:2.5rem; font-weight:700; box-shadow:0 10px 30px rgba(255,71,87,0.3);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>⚠️ Alerta del Motor IA: Consumo cercano al límite mensual. El servicio de generación se pausará al alcanzar el 100%.</span>
+                    <button onclick="this.parentElement.parentElement.style.display='none'" style="background:transparent; border:none; color:white; font-size:1.5rem; cursor:pointer;">×</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN LEADS -->
+            <section id="leads-section" class="section active">
+                <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3rem;">
+                    <div>
+                        <h1 style="font-size:2.2rem; font-weight:800;">Gestión Global de Prospectos</h1>
+                        <div style="margin-top:1rem; display:flex; gap:12px; align-items:center;">
+                            <span style="font-size:0.85rem; color:#888;">Filtrar por Cliente / Origen:</span>
+                            <select id="client-filter" style="background:#111; color:#d4af37; border:1px solid #333; padding:8px 16px; border-radius:10px; font-size:0.85rem; font-weight:700; cursor:pointer;">
+                                <option value="clients_global" selected>🌍 Global Clientes (Angel Curbelo & Sistema Captación)</option>
+                                <option value="master">🏰 Mío Individual (Master CRM HQ)</option>
+                                <option value="all">🌐 Todos en General (Clientes + Mío)</option>
+                                <option value="angel">🌟 Cliente: Angel Curbelo</option>
+                                <option value="father">⚡ Cliente: Sistema de Captación (Solar)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="export-btn" class="btn-mini primary" style="padding:0.8rem 1.5rem; font-size:0.85rem;">📥 Descargar Base CSV</button>
+                </header>
+                
+                <div class="crm-container">
+                    <!-- GRUPO: LEADS ACTIVOS -->
+                    <h3 class="crm-group-title">🔥 Prospectos en Proceso</h3>
+                    <div class="crm-column">
+                        <div class="column-header"><span class="column-title">📥 Nuevos / Por Contactar</span><span class="lead-count" id="count-nuevo">0</span></div>
+                        <div class="crm-table-wrapper">
+                            <table class="crm-table"><thead><tr><th>Calidad</th><th>Nombre</th><th>Origen</th><th>Acciones</th><th>Estado</th><th></th></tr></thead><tbody id="body-nuevo"></tbody></table>
+                        </div>
+                    </div>
+                    <div class="crm-column">
+                        <div class="column-header"><span class="column-title">⏳ En Seguimiento / Citas</span><span class="lead-count" id="count-seguimiento">0</span></div>
+                        <div class="crm-table-wrapper">
+                            <table class="crm-table"><thead><tr><th>Calidad</th><th>Nombre</th><th>Origen</th><th>Acciones</th><th>Estado</th><th></th></tr></thead><tbody id="body-seguimiento"></tbody></table>
+                        </div>
+                    </div>
+                    <div class="crm-column">
+                        <div class="column-header"><span class="column-title">✅ Venta Cierre / Seguimiento</span><span class="lead-count" id="count-venta">0</span></div>
+                        <div class="crm-table-wrapper">
+                            <table class="crm-table"><thead><tr><th>Calidad</th><th>Nombre</th><th>Origen</th><th>Acciones</th><th>Estado</th><th></th></tr></thead><tbody id="body-venta"></tbody></table>
+                        </div>
+                    </div>
+
+                    <!-- GRUPO: NO CUALIFICADOS -->
+                    <h3 class="crm-group-title" style="color: #e74c3c; margin-top: 2rem;">🚫 Archivo No Cualificados (Oportunidades Alternas)</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <div class="crm-column">
+                            <div class="column-header"><span class="column-title">🏠 Renta</span><span class="lead-count" id="count-renta">0</span></div>
+                            <div class="crm-table-wrapper">
+                                <table class="crm-table"><tbody id="body-renta"></tbody></table>
+                            </div>
+                        </div>
+                        <div class="crm-column">
+                            <div class="column-header"><span class="column-title">🏢 Apartamento</span><span class="lead-count" id="count-apartamento">0</span></div>
+                            <div class="crm-table-wrapper">
+                                <table class="crm-table"><tbody id="body-apartamento"></tbody></table>
+                            </div>
+                        </div>
+                        <div class="crm-column">
+                            <div class="column-header"><span class="column-title">💳 Crédito Afectado</span><span class="lead-count" id="count-credito">0</span></div>
+                            <div class="crm-table-wrapper">
+                                <table class="crm-table"><tbody id="body-credito"></tbody></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN ESTADÍSTICAS -->
+            <section id="stats-section" class="section">
+                <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3rem;">
+                    <div>
+                        <h1 style="font-size:2.2rem; font-weight:800;">Inteligencia y Estadísticas en Tiempo Real</h1>
+                        <p style="color:#888; font-size:0.9rem; margin-top:0.5rem;">Métricas consolidadas de captación, conversión y rendimiento de embudos.</p>
+                    </div>
+                    <select id="stats-filter" style="background:#111; color:#d4af37; border:1px solid #333; padding:8px 16px; border-radius:10px; font-weight:700; cursor:pointer;">
+                        <option value="clients_global" selected>🌍 Global Clientes (Angel Curbelo & Sistema Captación)</option>
+                        <option value="master">🏰 Mío Individual (Master CRM HQ)</option>
+                        <option value="all">🌐 Todos en General (Clientes + Mío)</option>
+                        <option value="angel">🌟 Cliente: Angel Curbelo</option>
+                        <option value="father">⚡ Cliente: Sistema de Captación (Solar)</option>
+                    </select>
+                </header>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1.5rem; margin-bottom:3rem;">
+                    <div style="background:#161616; padding:2rem; border-radius:24px; border:1px solid #222; text-align:center;">
+                        <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:1px;">Total Prospectos Captados</h4>
+                        <div id="stat-total" style="font-size:3.5rem; font-weight:800; color:#d4af37;">0</div>
+                    </div>
+                    <div style="background:#161616; padding:2rem; border-radius:24px; border:1px solid #222; text-align:center;">
+                        <h4 style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:1px;">Tasa Global de Conversión</h4>
+                        <div id="stat-conv" style="font-size:3.5rem; font-weight:800; color:#2ecc71;">0%</div>
+                    </div>
+                    <div style="background:#161616; padding:2rem; border-radius:24px; border:1px solid #222; text-align:center;">
+                        <h4 id="stat-top-label" style="color:#888; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:1px;">Segmento Dominante</h4>
+                        <div id="stat-top" style="font-size:2rem; font-weight:800; color:#3498db; margin-top:1rem;">Solar</div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(400px, 1fr)); gap:2.5rem;">
+                    <div style="background:#161616; padding:2.5rem; border-radius:24px; border:1px solid #222;">
+                        <h3 style="color:#d4af37; margin-bottom:1.5rem; font-weight:800;">Distribución por Plataforma</h3>
+                        <div style="position:relative; height:320px; display:flex; justify-content:center;"><canvas id="chart-products"></canvas></div>
+                    </div>
+                    <div style="background:#161616; padding:2.5rem; border-radius:24px; border:1px solid #222;">
+                        <h3 style="color:#d4af37; margin-bottom:1.5rem; font-weight:800;">Embudo de Ventas (Estatus)</h3>
+                        <div style="position:relative; height:320px;"><canvas id="chart-status"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN MARKETING -->
+            <section id="marketing-section" class="section">
+                <header style="margin-bottom:3rem;">
+                    <h1 id="marketing-title" style="font-size:2.2rem; font-weight:800;">Motor de Creativos & Campañas IA</h1>
+                    <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Generación de anuncios premium para venta de CRMs, sistemas solares y soluciones de bienestar.</p>
+                </header>
+                
+                <div style="margin-bottom:2rem; display:flex; gap:12px; align-items:center;">
+                    <span style="font-size:0.85rem; color:#888;">Enfoque de Campaña:</span>
+                    <select id="ad-category-select" style="background:#111; color:#d4af37; border:1px solid #333; padding:8px 16px; border-radius:10px; font-size:0.85rem; font-weight:700; cursor:pointer;">
+                        <option value="Master CRM HQ">🏰 Master CRM HQ (Venta de CRMs & Agentes IA)</option>
+                        <option value="direct">☀️ Energía Solar Pro</option>
+                        <option value="hh-integral">💧 H&H Bienestar (Agua y Aire)</option>
+                        <option value="rainbow-pr">🌈 Rainbow PR</option>
+                        <option value="zendure-pr">⚡ Baterías Zendure</option>
+                    </select>
+                </div>
+
+                <div class="marketing-grid">
+                    <div class="ad-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; color:#1877F2; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Facebook / Instagram</span>
+                            <span style="font-size:0.7rem; background:#1877F222; color:#1877F2; padding:3px 8px; border-radius:6px;">1:1 Cuadrado</span>
+                        </div>
+                        <div class="ad-visual-area fb-visual"><img src="/ads/fb_1.png" id="img-preview-fb"></div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn-mini primary" onclick="window.generateAIIdea('fb')" style="flex:1; padding:0.8rem; font-size:0.85rem; justify-content:center;">✨ Crear con IA (Texto + Foto)</button>
+                            <button class="btn-mini" onclick="window.generateIdea('fb')" style="padding:0.8rem;">🔄 Rotar Catálogo</button>
+                            <button class="btn-mini" onclick="document.getElementById('file-fb').click()" style="padding:0.8rem;">📁 Subir</button>
+                            <input type="file" id="file-fb" class="hidden-file" data-platform="fb">
+                        </div>
+                        <div class="ad-text-box" id="text-fb">Selecciona una opción para generar el copy perfecto...</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                            <button class="btn-mini" onclick="window.prepareAd('fb')" style="grid-column: span 2; padding: 1rem; font-size:0.9rem; font-weight: 800; background: linear-gradient(135deg, #d4af37, #f3e5ab); color: #000; border:none; border-radius: 12px; cursor: pointer; justify-content:center;">🚀 Publicar (Copiar Texto + Bajar Foto)</button>
+                            <button class="btn-mini primary" onclick="window.downloadMedia('fb')" style="cursor: pointer; justify-content:center;">📥 Bajar Foto</button>
+                            <button class="btn-mini btn-save-archive" data-platform="Facebook" style="cursor: pointer; justify-content:center; background:#222; border:1px solid #333;">⭐ Guardar en Archivo</button>
+                        </div>
+                    </div>
+                    <div class="ad-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; color:#ff0050; font-weight:800; text-transform:uppercase; letter-spacing:1px;">TikTok / Reels / Shorts</span>
+                            <span style="font-size:0.7rem; background:#ff005022; color:#ff0050; padding:3px 8px; border-radius:6px;">9:16 Vertical</span>
+                        </div>
+                        <div class="ad-visual-area tiktok-visual"><img src="/ads/tk_1.png" id="img-preview-tiktok"></div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn-mini primary" onclick="window.generateAIIdea('tiktok')" style="flex:1; padding:0.8rem; font-size:0.85rem; justify-content:center;">✨ Crear con IA (Guion + Arte)</button>
+                            <button class="btn-mini" onclick="window.generateIdea('tiktok')" style="padding:0.8rem;">🔄 Rotar Catálogo</button>
+                            <button class="btn-mini" onclick="document.getElementById('file-tiktok').click()" style="padding:0.8rem;">📁 Subir</button>
+                            <input type="file" id="file-tiktok" class="hidden-file" data-platform="tiktok">
+                        </div>
+                        <div class="ad-text-box" id="text-tiktok">Selecciona una opción para generar el guion viral...</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                            <button class="btn-mini" onclick="window.prepareAd('tiktok')" style="grid-column: span 2; padding: 1rem; font-size:0.9rem; font-weight: 800; background: linear-gradient(135deg, #d4af37, #f3e5ab); color: #000; border:none; border-radius: 12px; cursor: pointer; justify-content:center;">🚀 Publicar (Copiar Guion + Bajar Video)</button>
+                            <button class="btn-mini primary" onclick="window.downloadMedia('tiktok')" style="cursor: pointer; justify-content:center;">📥 Bajar Media</button>
+                            <button class="btn-mini btn-save-archive" data-platform="TikTok" style="cursor: pointer; justify-content:center; background:#222; border:1px solid #333;">⭐ Guardar en Archivo</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN GENERADOR DE DOCUMENTOS (Facturas, Propuestas, Contratos) -->
+            <section id="docs-section" class="section">
+                <header style="margin-bottom:3rem;">
+                    <h1 style="font-size:2.2rem; font-weight:800;">Generador de Facturas, Propuestas y Contratos</h1>
+                    <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Crea documentos comerciales corporativos con Inteligencia Artificial al instante.</p>
+                </header>
+                
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:2.5rem;">
+                    <div style="background:#161616; padding:2.5rem; border-radius:24px; border:1px solid #222;">
+                        <h3 style="color:#d4af37; margin-bottom:1.5rem; font-weight:800;">Parámetros del Documento</h3>
+                        
+                        <div style="margin-bottom:1.5rem;">
+                            <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Tipo de Documento</label>
+                            <select id="doc-gen-type" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:600; cursor:pointer;">
+                                <option value="factura">🧾 Factura Comercial (Itemizada)</option>
+                                <option value="propuesta">📄 Propuesta Comercial (CRM / IA)</option>
+                                <option value="contrato">✍️ Contrato de Desarrollo y Licenciamiento</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom:1.5rem;">
+                            <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Cliente / Empresa</label>
+                            <input type="text" id="doc-gen-client" placeholder="Ej: Solar Pro LLC / Ing. Marcos Rivera" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:600;">
+                        </div>
+
+                        <div style="margin-bottom:2rem;">
+                            <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Detalles de Servicios y Precios</label>
+                            <textarea id="doc-gen-details" rows="4" placeholder="Ej: Sistema CRM Master con 3 bases de datos, integración de WhatsApp y agente IA multimodal. Costo total: $3,500 USD." style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:500; resize:none;"></textarea>
+                        </div>
+
+                        <button id="btn-run-doc-gen" style="width:100%; padding:1.2rem; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-weight:800; border:none; border-radius:12px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 10px 25px rgba(212,175,55,0.25);">
+                            ✨ Generar Documento IA
+                        </button>
+                    </div>
+
+                    <div style="background:#161616; padding:2.5rem; border-radius:24px; border:1px solid #222; display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <h3 style="color:#d4af37; margin:0; font-weight:800;">Documento Resultante</h3>
+                                <div style="display:flex; background:#000; padding:4px; border-radius:10px; border:1px solid #333;">
+                                    <button id="tab-visual" onclick="document.getElementById('doc-visual-preview').style.display='block'; document.getElementById('doc-gen-result').style.display='none'; this.style.background='#d4af37'; this.style.color='#000'; document.getElementById('tab-raw').style.background='transparent'; document.getElementById('tab-raw').style.color='#888';" style="padding:6px 12px; font-size:0.8rem; font-weight:700; border-radius:8px; border:none; background:#d4af37; color:#000; cursor:pointer;">👁️ Vista Profesional</button>
+                                    <button id="tab-raw" onclick="document.getElementById('doc-visual-preview').style.display='none'; document.getElementById('doc-gen-result').style.display='block'; this.style.background='#222'; this.style.color='#fff'; document.getElementById('tab-visual').style.background='transparent'; document.getElementById('tab-visual').style.color='#888';" style="padding:6px 12px; font-size:0.8rem; font-weight:700; border-radius:8px; border:none; background:transparent; color:#888; cursor:pointer;">💻 Código JSON/TXT</button>
+                                </div>
+                            </div>
+                            <span id="doc-status-badge" style="font-size:0.75rem; background:#333; color:#aaa; padding:4px 10px; border-radius:8px; font-weight:700;">Borrador</span>
+                        </div>
+                        
+                        <div id="doc-visual-preview" style="width:100%; flex:1; background:#ffffff; color:#111111; padding:3rem 3.5rem; border-radius:16px; margin-bottom:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); overflow-y:auto; max-height:650px;">
+                            <div style="text-align:center; color:#888; padding:4rem 0;">
+                                <div style="font-size:3rem; margin-bottom:1rem;">📄</div>
+                                <h4 style="font-size:1.2rem; font-weight:700; color:#555; margin-bottom:0.5rem;">Sin Documento Generado</h4>
+                                <p style="font-size:0.95rem;">Ingresa los datos a la izquierda y presiona "Generar Documento IA" para crear una factura, propuesta o contrato corporativo.</p>
+                            </div>
+                        </div>
+
+                        <textarea id="doc-gen-result" rows="12" style="display:none; width:100%; flex:1; padding:1.5rem; background:#000; color:#fff; border:1px solid #333; border-radius:16px; font-family:monospace; font-size:0.9rem; line-height:1.6; margin-bottom:1.5rem; resize:none;"></textarea>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                            <button id="btn-print-doc" onclick="window.print()" style="padding:1rem; background:#3498db; color:white; font-weight:800; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">🖨️ Imprimir / Guardar PDF</button>
+                            <button id="btn-copy-doc" style="padding:1rem; background:#222; color:white; font-weight:700; border:1px solid #333; border-radius:12px; cursor:pointer;">📋 Copiar Texto</button>
+                            <button id="btn-download-doc" style="padding:1rem; background:#25d366; color:#000; font-weight:800; border:none; border-radius:12px; cursor:pointer;">📥 Descargar TXT</button>
+                            <button id="btn-save-doc" style="grid-column:span 3; padding:1.2rem; background:linear-gradient(135deg, #d4af37, #f3e5ab); color:#000; font-weight:800; border:none; border-radius:12px; cursor:pointer; box-shadow:0 5px 15px rgba(212,175,55,0.2);">⭐ Guardar en Archivo de Documentos</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN CLIENTES -->
+            <section id="clients-section" class="section">
+                <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3rem;">
+                    <div>
+                        <h1 style="font-size:2.2rem; font-weight:800;">Gestión de Clientes & Contacto Directo</h1>
+                        <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Administración de cuentas, permisos de notificaciones y comunicación instantánea.</p>
+                    </div>
+                    <button onclick="document.getElementById('add-client-modal').style.display='flex'" class="btn-mini primary" style="padding:0.8rem 1.5rem; font-size:0.9rem;">➕ Agregar Cliente</button>
+                </header>
+                <div id="clients-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 2rem;">
+                    <div style="color: #555;">Cargando configuración de clientes...</div>
+                </div>
+            </section>
+
+            <!-- ARCHIVO DE ANUNCIOS -->
+            <section id="archive-section" class="section">
+                <header style="margin-bottom:3rem;">
+                    <h1 style="font-size:2.2rem; font-weight:800;">Anuncios y Creativos Archivados</h1>
+                    <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Repositorio de campañas guardadas exitosas listas para relanzar.</p>
+                </header>
+                <div id="archive-body" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(400px, 1fr)); gap:1.5rem;"></div>
+            </section>
+
+            <!-- ARCHIVO DE DOCUMENTOS -->
+            <section id="doc-archive-section" class="section">
+                <header style="margin-bottom:3rem;">
+                    <h1 style="font-size:2.2rem; font-weight:800;">Archivo Histórico de Documentos</h1>
+                    <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Repositorio oficial de todas tus facturas, propuestas y contratos generados.</p>
+                </header>
+                <div id="doc-archive-body" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(400px, 1fr)); gap:2rem;"></div>
+            </section>
+
+            <!-- SECCIÓN QR LANDING PAGE -->
+            <section id="qr-section" class="section">
+                <header style="margin-bottom:3rem;">
+                    <h1 style="font-size:2.2rem; font-weight:800;">📱 Código QR Oficial para Captación</h1>
+                    <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Comparte tu Landing Page de Master CRM con prospectos y clientes al instante.</p>
+                </header>
+                
+                <div style="background:#161616; border:1px solid #333; border-radius:28px; padding:4rem 2rem; text-align:center; max-width:650px; margin:0 auto; box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+                    <div style="display:inline-block; padding:1.5rem; background:#fff; border-radius:24px; margin-bottom:2rem; box-shadow:0 15px 35px rgba(212,175,55,0.2);">
+                        <img id="landing-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https://master-crm-jvarela.web.app/&color=000000&bgcolor=ffffff&margin=10" alt="Código QR Landing Page" style="width:280px; height:280px; display:block;">
+                    </div>
+                    
+                    <h3 style="color:#d4af37; font-size:1.6rem; font-weight:800; margin-bottom:0.8rem;">Master CRM HQ - Landing Page Oficial</h3>
+                    <p style="color:#aaa; font-size:1rem; margin-bottom:2.5rem; max-width:480px; margin-left:auto; margin-right:auto; line-height:1.6;">
+                        URL Directa: <a href="https://master-crm-jvarela.web.app/" target="_blank" style="color:#d4af37; font-weight:700; text-decoration:underline;">https://master-crm-jvarela.web.app/</a><br>
+                        Muestra este QR en tu móvil para que los prospectos escaneen y soliciten su CRM personalizado o Agente de IA.
+                    </p>
+                    
+                    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                        <button onclick="const w = window.open(); w.document.write('<html><head><title>Imprimir QR</title></head><body style=\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;\'><h2 style=\'margin-bottom:20px;\'>Master CRM HQ - Escanea para Cotizar</h2><img src=\'https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=https://master-crm-jvarela.web.app/&color=000000&bgcolor=ffffff&margin=20\' style=\'width:400px;height:400px;\'><p style=\'margin-top:20px;font-size:18px;color:#555;\'>https://master-crm-jvarela.web.app/</p><script>window.onload=()=>window.print();</script></body></html>'); w.document.close();" style="padding:1.2rem 2.5rem; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-weight:800; font-size:1rem; border:none; border-radius:16px; cursor:pointer; display:flex; align-items:center; gap:10px; box-shadow:0 10px 25px rgba(212,175,55,0.3); transition:0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                            🖨️ Imprimir Código QR
+                        </button>
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=800x800&data=https://master-crm-jvarela.web.app/&color=000000&bgcolor=ffffff&margin=20" download="QR_Master_CRM_Landing.png" target="_blank" style="padding:1.2rem 2.5rem; background:#222; color:#fff; font-weight:700; font-size:1rem; border:1px solid #333; border-radius:16px; text-decoration:none; display:flex; align-items:center; gap:10px; transition:0.2s;" onmouseover="this.style.background='#333'; this.style.borderColor='#d4af37'" onmouseout="this.style.background='#222'; this.style.borderColor='#333'">
+                            📥 Descargar QR (.PNG)
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN TARJETAS DIGITALES VIP -->
+            <section id="cards-section" class="section">
+                <header style="margin-bottom:3rem;">
+                    <h1 style="font-size:2.2rem; font-weight:800;">🪪 Generador VIP de Tarjetas Digitales (vCard & Apple Wallet)</h1>
+                    <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Crea perfiles móviles instantáneos con exportación a contactos y Wallet para ti y los clientes de tu agencia.</p>
+                </header>
+
+                <div style="display:grid; grid-template-columns:1fr 420px; gap:3rem; align-items:start;">
+                    <!-- Formulario de Configuración -->
+                    <div style="background:#161616; border:1px solid #333; border-radius:28px; padding:2.5rem; box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+                        <h3 style="color:#d4af37; font-size:1.4rem; font-weight:800; margin-bottom:1.8rem; display:flex; align-items:center; gap:10px;">
+                            <span>⚙️</span> Personalizar Tarjeta VIP
+                        </h3>
+
+                        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                            <div>
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">NOMBRE COMPLETO</label>
+                                <input type="text" id="card-gen-name" value="Julio Varela" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                                <div>
+                                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">CARGO / PUESTO</label>
+                                    <input type="text" id="card-gen-title" value="CEO & Experto en IA" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">EMPRESA</label>
+                                    <input type="text" id="card-gen-company" value="Master CRM HQ" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">
+                                </div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                                <div>
+                                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">TELÉFONO WHATSAPP</label>
+                                    <input type="text" id="card-gen-phone" value="+17875550199" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">
+                                </div>
+                                <div>
+                                    <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">EMAIL</label>
+                                    <input type="email" id="card-gen-email" value="jvarela2528@gmail.com" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">SITIO WEB / LANDING PAGE</label>
+                                <input type="text" id="card-gen-web" value="https://master-crm-jvarela.web.app/" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#aaa; margin-bottom:0.5rem;">BIOGRAFÍA BREVE</label>
+                                <textarea id="card-gen-bio" rows="3" oninput="updateCardPreview()" style="width:100%; background:#0a0a0a; border:1px solid #333; border-radius:14px; padding:1rem 1.2rem; color:#fff; font-size:1rem; outline:none; resize:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#333'">Transformando negocios con Inteligencia Artificial, Agentes Telefónicos Autónomos y Sistemas CRM de alto rendimiento.</textarea>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:2.5rem; padding-top:2rem; border-top:1px solid #222; display:flex; gap:16px; flex-wrap:wrap;">
+                            <button onclick="copyVipLink()" style="flex:1; padding:1.2rem 1.8rem; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-weight:800; font-size:0.95rem; border:none; border-radius:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 10px 25px rgba(212,175,55,0.3); transition:0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                                🔗 Copiar Enlace de Perfil VIP
+                            </button>
+                            <button onclick="openVipLive()" style="padding:1.2rem 1.8rem; background:#222; color:#fff; font-weight:700; font-size:0.95rem; border:1px solid #444; border-radius:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:0.2s;" onmouseover="this.style.background='#333'; this.style.borderColor='#d4af37'" onmouseout="this.style.background='#222'; this.style.borderColor='#444'">
+                                🌐 Abrir VIP en Vivo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Previsualización Móvil (iPhone Style) -->
+                    <div style="background:#000; border:12px solid #222; border-radius:48px; padding:2rem 1.5rem 3rem; text-align:center; box-shadow:0 35px 65px rgba(0,0,0,0.9), 0 0 0 2px #444; position:sticky; top:2rem;">
+                        <div style="width:120px; height:24px; background:#222; border-radius:12px; margin:0 auto 1.5rem;"></div>
+                        
+                        <div style="background:linear-gradient(180deg, #161616, #0d0d0d); border:1px solid #333; border-radius:28px; padding:2rem 1.2rem; position:relative; overflow:hidden; text-align:center;">
+                            <div style="position:absolute; top:16px; right:16px; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-size:0.65rem; font-weight:800; padding:4px 10px; border-radius:99px;" id="prev-company">Master CRM HQ</div>
+                            
+                            <div style="width:80px; height:80px; border-radius:50%; margin:10px auto 12px; border:2px solid #d4af37; padding:2px; background:#000; overflow:hidden;">
+                                <img src="/logo_jvarela.jpg" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                            </div>
+
+                            <h3 id="prev-name" style="font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:4px;">Julio Varela</h3>
+                            <p id="prev-title" style="font-size:0.85rem; font-weight:600; color:#d4af37; margin-bottom:16px;">CEO & Experto en IA</p>
+
+                            <div id="prev-bio" style="font-size:0.75rem; color:#aaa; line-height:1.4; background:rgba(0,0,0,0.5); padding:10px; border-radius:12px; border:1px solid #222; margin-bottom:20px;">
+                                Transformando negocios con Inteligencia Artificial, Agentes Telefónicos Autónomos y Sistemas CRM de alto rendimiento.
+                            </div>
+
+                            <div style="background:#fff; padding:12px; border-radius:16px; display:inline-block; margin-bottom:20px;">
+                                <img id="prev-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://master-crm-jvarela.web.app/vip.html&color=000000&bgcolor=ffffff" style="width:120px; height:120px; display:block;">
+                            </div>
+
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                <div style="padding:10px; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-size:0.85rem; font-weight:700; border-radius:12px;">💾 Guardar en Contactos</div>
+                                <div style="padding:10px; background:#000; color:#fff; font-size:0.85rem; font-weight:700; border-radius:12px; border:1px solid #333;"> Añadir a Apple Wallet</div>
+                            </div>
+                        </div>
+
+                        <div style="width:140px; height:5px; background:#444; border-radius:10px; margin:2rem auto 0;"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL REGISTRO DE CLIENTES -->
+    <div id="add-client-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#161616; width:100%; max-width:480px; padding:3rem; border-radius:28px; border:1px solid #333; color:white; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.8);">
+            <button onclick="document.getElementById('add-client-modal').style.display='none'" style="position:absolute; top:25px; right:25px; background:transparent; border:none; color:#888; font-size:1.8rem; cursor:pointer;">×</button>
+            <h2 style="color:#d4af37; margin-bottom:1.5rem; font-size:1.6rem; font-weight:800;">➕ Registrar Nuevo Cliente</h2>
+            
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Nombre del Ejecutivo / Cliente</label>
+                <input type="text" id="new-client-name" placeholder="Ej: Carlos Gómez" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:600;">
+            </div>
+
+            <div style="margin-bottom:2.5rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">WhatsApp de Contacto / Alertas</label>
+                <input type="text" id="new-client-phone" placeholder="Ej: 17875550000" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:600;">
+            </div>
+
+            <button id="btn-create-client" style="width:100%; padding:1.2rem; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-weight:800; border:none; border-radius:12px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 10px 25px rgba(212,175,55,0.25);">
+                🚀 Guardar Cliente
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL DE ASISTENTE IA DE COMUNICACIÓN -->
+    <div id="ai-comm-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#161616; width:100%; max-width:650px; padding:3rem; border-radius:28px; border:1px solid #333; color:white; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.8);">
+            <button onclick="document.getElementById('ai-comm-modal').style.display='none'" style="position:absolute; top:25px; right:25px; background:transparent; border:none; color:#888; font-size:1.8rem; cursor:pointer;">×</button>
+            <h2 style="color:#d4af37; margin-bottom:0.5rem; font-size:1.6rem; font-weight:800; display:flex; align-items:center; gap:10px;">✨ Asistente IA de Comunicación</h2>
+            <p id="ai-comm-lead-name" style="color:#aaa; font-size:0.95rem; margin-bottom:2rem;"></p>
+            
+            <div style="margin-bottom:1.8rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🎯 Objetivo del Mensaje</label>
+                <select id="ai-comm-objective" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
+                    <option value="Contacto inicial y presentación de servicios premium">👋 Contacto inicial y presentación de servicios premium</option>
+                    <option value="Seguimiento para agendar una orientación/demostración">📅 Seguimiento para agendar una orientación/demostración</option>
+                    <option value="Enviar propuesta de valor y cotización personalizada">📄 Enviar propuesta de valor y cotización personalizada</option>
+                    <option value="Resolver dudas y manejar objeciones de precio">💡 Resolver dudas y manejar objeciones de precio</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:2rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🗣️ Tono de Comunicación</label>
+                <select id="ai-comm-tone" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
+                    <option value="Profesional, empático y muy natural">👔 Profesional, empático y muy natural</option>
+                    <option value="Directo, persuasivo y enfocado en valor">⚡ Directo, persuasivo y enfocado en valor</option>
+                    <option value="Cálido, respetuoso y resolutivo">🤝 Cálido, respetuoso y resolutivo</option>
+                </select>
+            </div>
+
+            <button id="btn-run-ai-comm" style="width:100%; padding:1.2rem; background:linear-gradient(135deg, #d4af37, #f9e29c); color:#000; font-size:1.05rem; font-weight:800; border:none; border-radius:16px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 10px 25px rgba(212,175,55,0.25);">
+                🚀 Redactar Mensaje Inteligente
+            </button>
+
+            <div id="ai-comm-result-box" style="display:none; animation:fadeIn 0.4s ease;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">📝 Mensaje Generado</label>
+                <textarea id="ai-comm-result-text" rows="6" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #d4af3755; border-radius:16px; outline:none; font-size:0.95rem; line-height:1.6; margin-bottom:1.5rem; resize:none; font-family:inherit;"></textarea>
+                <div style="display:flex; gap:12px;">
+                    <button id="btn-wa-ai-comm" style="flex:2; padding:1.2rem; background:#25d366; color:#000; font-weight:800; font-size:1rem; border:none; border-radius:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 10px 25px rgba(37,211,102,0.25);">📱 Enviar por WhatsApp</button>
+                    <button id="btn-copy-ai-comm" style="flex:1; padding:1.2rem; background:#222; color:white; font-weight:700; font-size:1rem; border:1px solid #333; border-radius:16px; cursor:pointer;">📋 Copiar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE AGENDAMIENTO Y SINCRONIZACIÓN DE CALENDARIO -->
+    <div id="appointment-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#161616; width:100%; max-width:580px; padding:3rem; border-radius:28px; border:1px solid #333; color:white; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.8);">
+            <button onclick="document.getElementById('appointment-modal').style.display='none'" style="position:absolute; top:25px; right:25px; background:transparent; border:none; color:#888; font-size:1.8rem; cursor:pointer;">×</button>
+            <h2 style="color:#d4af37; margin-bottom:0.5rem; font-size:1.6rem; font-weight:800; display:flex; align-items:center; gap:10px;">📅 Agendador de Citas & Calendario</h2>
+            <p id="appointment-lead-info" style="color:#aaa; font-size:0.95rem; margin-bottom:2rem;"></p>
+            
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Encabezado / Tipo de Servicio</label>
+                <input type="text" id="appointment-header" placeholder="Ej: [CITA VIP] Master CRM Personalizado" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:700; font-size:1rem; color:#d4af37;">
+                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                    <button class="btn-mini tag-btn-appointment" data-tag="[CITA VIP] Master CRM Personalizado" style="background:#222; border:1px solid #333; font-size:0.75rem;">🏰 CRM HQ</button>
+                    <button class="btn-mini tag-btn-appointment" data-tag="[ORIENTACIÓN] Paneles Solares & Batería" style="background:#222; border:1px solid #333; font-size:0.75rem;">☀️ Solar</button>
+                    <button class="btn-mini tag-btn-appointment" data-tag="[DEMO] Aqua Viva / Water Tree" style="background:#222; border:1px solid #333; font-size:0.75rem;">💧 H&H</button>
+                    <button class="btn-mini tag-btn-appointment" data-tag="[DEMO] Sistema Rainbow SRX" style="background:#222; border:1px solid #333; font-size:0.75rem;">🌈 Rainbow</button>
+                    <button class="btn-mini tag-btn-appointment" data-tag="[ORIENTACIÓN] Baterías de Respaldo Zendure" style="background:#222; border:1px solid #333; font-size:0.75rem;">⚡ Zendure</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Fecha y Hora de la Reunión</label>
+                <input type="datetime-local" id="appointment-datetime" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:600; font-size:1rem; color-scheme:dark;">
+            </div>
+
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Ubicación o Enlace (Meet, Zoom, Teléfono)</label>
+                <input type="text" id="appointment-location" placeholder="Ej: Llamada Telefónica / Google Meet / Visita al Hogar" style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:600;">
+            </div>
+
+            <div style="margin-bottom:2.5rem;">
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.5rem; font-weight:700; text-transform:uppercase;">Notas para el Calendario</label>
+                <textarea id="appointment-notes" rows="3" placeholder="Detalles del prospecto, factura eléctrica o requerimientos..." style="width:100%; padding:1rem; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; font-weight:500; resize:none; font-size:0.9rem;"></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+                <button id="btn-gcal-sync" style="padding:1.2rem; background:#4285F4; color:white; font-weight:800; font-size:0.95rem; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 10px 25px rgba(66,133,244,0.25);">🗓️ Google Calendar</button>
+                <button id="btn-ical-sync" style="padding:1.2rem; background:#222; color:white; font-weight:800; font-size:0.95rem; border:1px solid #444; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">📥 Archivo iCal (.ics)</button>
+            </div>
+            
+            <button id="btn-save-appointment" style="width:100%; padding:1.2rem; background:linear-gradient(135deg, #25d366, #10b981); color:#000; font-weight:800; font-size:1.05rem; border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 10px 25px rgba(37,211,102,0.25); text-transform:uppercase;">
+                ✅ Guardar Cita & Confirmar por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function updateCardPreview() {
+            const name = document.getElementById('card-gen-name').value || 'Julio Varela';
+            const title = document.getElementById('card-gen-title').value || 'CEO & Experto en IA';
+            const company = document.getElementById('card-gen-company').value || 'Master CRM HQ';
+            const phone = document.getElementById('card-gen-phone').value || '+17875550199';
+            const email = document.getElementById('card-gen-email').value || 'jvarela2528@gmail.com';
+            const bio = document.getElementById('card-gen-bio').value || '';
+            const web = document.getElementById('card-gen-web').value || window.location.origin;
+
+            document.getElementById('prev-name').innerText = name;
+            document.getElementById('prev-title').innerText = title;
+            document.getElementById('prev-company').innerText = company;
+            document.getElementById('prev-bio').innerText = bio;
+
+            const url = new URL(window.location.origin + '/vip.html');
+            url.searchParams.set('name', name);
+            url.searchParams.set('title', title);
+            url.searchParams.set('company', company);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('email', email);
+            url.searchParams.set('web', web);
+            url.searchParams.set('bio', bio);
+
+            document.getElementById('prev-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url.toString())}&color=000000&bgcolor=ffffff`;
+        }
+
+        function getVipGeneratedUrl() {
+            const name = document.getElementById('card-gen-name').value || 'Julio Varela';
+            const title = document.getElementById('card-gen-title').value || 'CEO & Experto en IA';
+            const company = document.getElementById('card-gen-company').value || 'Master CRM HQ';
+            const phone = document.getElementById('card-gen-phone').value || '+17875550199';
+            const email = document.getElementById('card-gen-email').value || 'jvarela2528@gmail.com';
+            const bio = document.getElementById('card-gen-bio').value || '';
+            const web = document.getElementById('card-gen-web').value || window.location.origin;
+
+            const url = new URL(window.location.origin + '/vip.html');
+            url.searchParams.set('name', name);
+            url.searchParams.set('title', title);
+            url.searchParams.set('company', company);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('email', email);
+            url.searchParams.set('web', web);
+            url.searchParams.set('bio', bio);
+            return url.toString();
+        }
+
+        function copyVipLink() {
+            const url = getVipGeneratedUrl();
+            navigator.clipboard.writeText(url).then(() => {
+                alert('¡Enlace VIP copiado al portapapeles!\n\nPuedes enviarlo por WhatsApp o ponerlo en la biografía de tus redes sociales.');
+            });
+        }
+
+        function openVipLive() {
+            const url = getVipGeneratedUrl();
+            window.open(url, '_blank');
+        }
+    </script>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

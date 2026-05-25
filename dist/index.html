@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER CRM HQ | Desarrollo de CRM Personalizados & Agentes IA</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; padding: 0; }
+        
+        /* Glassmorphism Header */
+        .navbar { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 4rem; background: rgba(10, 10, 10, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 1000; }
+        .logo-area { font-size: 1.4rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
+        .logo-accent { color: #d4af37; }
+        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-link { color: #aaa; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; }
+        .nav-link:hover { color: #d4af37; }
+        .btn-portal { background: linear-gradient(135deg, #d4af37, #f9e29c); color: #000; padding: 0.8rem 1.6rem; border-radius: 99px; font-weight: 800; text-decoration: none; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-portal:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(212, 175, 55, 0.4); }
+
+        /* Hero Section */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 8rem 2rem 4rem; position: relative; background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.15) 0%, rgba(10, 10, 10, 1) 70%); }
+        .badge-premium { display: inline-flex; align-items: center; gap: 8px; background: rgba(212, 175, 55, 0.12); border: 1px solid rgba(212, 175, 55, 0.3); color: #d4af37; padding: 6px 18px; border-radius: 99px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2rem; animation: float 3s ease-in-out infinite; }
+        .hero h1 { font-size: 4.5rem; font-weight: 900; line-height: 1.1; max-width: 1000px; margin-bottom: 1.8rem; letter-spacing: -1.5px; background: linear-gradient(180deg, #FFFFFF 0%, #CCCCCC 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.3rem; color: #888; max-width: 750px; line-height: 1.6; margin-bottom: 3rem; font-weight: 400; }
+        .hero-actions { display: flex; gap: 1.2rem; align-items: center; }
+        .btn-hero-primary { background: linear-gradient(135deg, #d4af37, #f3e5ab); color: #000; padding: 1.2rem 2.5rem; border-radius: 16px; font-weight: 800; text-decoration: none; font-size: 1.1rem; box-shadow: 0 15px 30px rgba(212, 175, 55, 0.35); transition: 0.3s; }
+        .btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5); }
+        .btn-hero-secondary { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); padding: 1.2rem 2.5rem; border-radius: 16px; font-weight: 700; text-decoration: none; font-size: 1.1rem; backdrop-filter: blur(10px); transition: 0.3s; }
+        .btn-hero-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
+
+        /* Key Services Section */
+        .services-section { padding: 8rem 4rem; max-width: 1300px; margin: 0 auto; position: relative; }
+        .section-header { text-align: center; margin-bottom: 5rem; }
+        .section-header h2 { font-size: 3rem; font-weight: 900; margin-bottom: 1rem; color: #fff; letter-spacing: -1px; }
+        .section-header p { font-size: 1.15rem; color: #888; max-width: 600px; margin: 0 auto; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .service-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); padding: 3rem 2.5rem; border-radius: 28px; transition: 0.3s; position: relative; overflow: hidden; }
+        .service-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.04); border-color: rgba(212, 175, 55, 0.4); box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .service-icon { font-size: 3rem; margin-bottom: 1.8rem; display: inline-block; background: rgba(212, 175, 55, 0.1); padding: 1rem 1.2rem; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .service-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+        .service-desc { font-size: 0.95rem; color: #888; line-height: 1.6; }
+
+        /* Showcase Banner */
+        .showcase-banner { background: linear-gradient(135deg, #111, #181818); border-top: 1px solid rgba(212, 175, 55, 0.2); border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding: 6rem 4rem; text-align: center; position: relative; overflow: hidden; }
+        .showcase-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3rem; max-width: 1200px; margin: 4rem auto 0; }
+        .showcase-stat { display: flex; flex-direction: column; gap: 0.5rem; }
+        .stat-val { font-size: 3.5rem; font-weight: 900; color: #d4af37; }
+        .stat-lbl { font-size: 0.9rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Lead Capture Section */
+        .capture-section { padding: 8rem 2rem; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.08) 0%, rgba(10, 10, 10, 1) 70%); }
+        .capture-card { background: #161616; border: 1px solid #282828; padding: 4.5rem; border-radius: 36px; max-width: 750px; width: 100%; box-shadow: 0 30px 70px rgba(0,0,0,0.8); position: relative; }
+        .capture-header { text-align: center; margin-bottom: 3.5rem; }
+        .capture-header h2 { font-size: 2.5rem; font-weight: 900; color: #fff; margin-bottom: 1rem; }
+        .capture-header p { font-size: 1.1rem; color: #888; }
+        
+        .form-group { margin-bottom: 1.8rem; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: #aaa; margin-bottom: 0.6rem; text-transform: uppercase; letter-spacing: 1px; }
+        .form-input { width: 100%; padding: 1.2rem 1.5rem; background: #000; border: 1px solid #333; border-radius: 16px; color: #fff; font-size: 1rem; font-weight: 600; outline: none; transition: border-color 0.2s; }
+        .form-input:focus { border-color: #d4af37; }
+        .form-select { width: 100%; padding: 1.2rem 1.5rem; background: #000; border: 1px solid #333; border-radius: 16px; color: #fff; font-size: 1rem; font-weight: 600; outline: none; cursor: pointer; }
+        .form-textarea { width: 100%; padding: 1.2rem 1.5rem; background: #000; border: 1px solid #333; border-radius: 16px; color: #fff; font-size: 1rem; font-weight: 500; outline: none; resize: vertical; min-height: 120px; }
+
+        .btn-submit { width: 100%; padding: 1.4rem; background: linear-gradient(135deg, #d4af37, #f9e29c); color: #000; font-weight: 900; font-size: 1.1rem; border: none; border-radius: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3); transition: transform 0.2s; margin-top: 1rem; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.4); }
+
+        .success-card { text-align: center; padding: 2rem 1rem; }
+        .success-icon { font-size: 4rem; margin-bottom: 1.5rem; animation: scaleUp 0.5s ease; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes scaleUp { from { transform: scale(0); } to { transform: scale(1); } }
+
+        @media (max-width: 1024px) {
+            .navbar { padding: 1rem 2rem; }
+            .hero h1 { font-size: 3.2rem; }
+            .showcase-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+            .capture-card { padding: 2.5rem; }
+            .services-section { padding: 6rem 2rem; }
+        }
+        @media (max-width: 640px) {
+            body { overflow-x: hidden; width: 100vw; }
+            .navbar { padding: 0.8rem 1.2rem; }
+            .logo-area { font-size: 1.1rem; gap: 6px; }
+            .btn-portal { padding: 0.6rem 1.1rem; font-size: 0.85rem; }
+            .nav-links { display: none; }
+            
+            .hero { padding: 7rem 1.2rem 3.5rem; }
+            .badge-premium { padding: 8px 16px; font-size: 0.75rem; text-align: center; white-space: normal; line-height: 1.4; margin-bottom: 1.5rem; width: 100%; box-sizing: border-box; }
+            .hero h1 { font-size: 2.3rem; line-height: 1.2; margin-bottom: 1.2rem; }
+            .hero p { font-size: 1.05rem; margin-bottom: 2.2rem; padding: 0 0.5rem; }
+            .hero-actions { flex-direction: column; width: 100%; gap: 1rem; }
+            .btn-hero-primary, .btn-hero-secondary { width: 100%; text-align: center; padding: 1.1rem; font-size: 1rem; box-sizing: border-box; }
+            
+            .services-section { padding: 4rem 1.2rem; }
+            .section-header { margin-bottom: 3rem; }
+            .section-header h2 { font-size: 2rem; }
+            .section-header p { font-size: 1rem; }
+            .services-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .service-card { padding: 2.2rem 1.8rem; border-radius: 22px; }
+            
+            .showcase-banner { padding: 4rem 1.2rem; }
+            .showcase-banner h2 { font-size: 1.8rem !important; }
+            .showcase-banner p { font-size: 1rem !important; }
+            .showcase-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
+            .stat-val { font-size: 2.5rem; }
+            .stat-lbl { font-size: 0.8rem; }
+            
+            .capture-section { padding: 4rem 1rem; }
+            .capture-card { padding: 2.2rem 1.5rem; border-radius: 24px; }
+            .capture-header { margin-bottom: 2.5rem; }
+            .capture-header h2 { font-size: 1.8rem; }
+            .capture-header p { font-size: 0.95rem; }
+            .form-input, .form-select, .form-textarea { padding: 1rem 1.2rem; font-size: 0.95rem; }
+            .btn-submit { padding: 1.2rem 1rem; font-size: 1rem; }
+        }
+        @media (max-width: 380px) {
+            .logo-area { font-size: 1rem; }
+            .btn-portal { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+            .hero h1 { font-size: 2rem; }
+            .stat-val { font-size: 2.2rem; }
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/main-BX9otgJm.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/firebase-config-D6kR5qge.js">
+  <link rel="stylesheet" crossorigin href="/assets/firebase-config-BH_UUtqv.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo-area">
+            <span class="logo-accent">🏰 MASTER</span> CRM HQ
+        </div>
+        <div class="nav-links">
+            <a href="#servicios" class="nav-link">Servicios</a>
+            <a href="#impacto" class="nav-link">Impacto</a>
+            <a href="#cotizar" class="nav-link">Cotizar Gratis</a>
+        </div>
+        <div>
+            <a href="/admin" class="btn-portal">🔐 Portal de Clientes</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="badge-premium">✨ Creación de CRMs a la Medida & Agentes de IA Autónomos</div>
+        <h1>Sistemas Inteligentes para Escalar tu Negocio sin Límites</h1>
+        <p>Diseñamos infraestructuras de captación de clientes, embudos automatizados y asistentes multimodales de WhatsApp con Inteligencia Artificial para empresas que exigen el máximo rendimiento.</p>
+        <div class="hero-actions">
+            <a href="#cotizar" class="btn-hero-primary">🚀 Iniciar Cotización VIP</a>
+            <a href="https://wa.me/17874596147?text=Hola%20Julio%20Varela,%20me%20gustar%C3%ADa%20una%20orientaci%C3%B3n%20para%20un%20CRM%20personalizado%20o%20agente%20de%20IA." target="_blank" class="btn-hero-secondary">💬 WhatsApp Directo</a>
+        </div>
+    </section>
+
+    <!-- Key Services Section -->
+    <section id="servicios" class="services-section">
+        <div class="section-header">
+            <h2>Soluciones de Arquitectura Avanzada</h2>
+            <p>Construimos herramientas digitales propietarias que eliminan las tareas manuales y multiplican tu tasa de cierre comercial.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🏰</div>
+                <h3 class="service-title">CRMs Premium Personalizados</h3>
+                <p class="service-desc">Estructuras de embudo vertical, alertas de nuevos prospectos en tiempo real y estadísticas inteligentes sin pagar costosas licencias mensuales por usuario.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🤖</div>
+                <h3 class="service-title">Agentes Autónomos (WhatsApp & Telegram)</h3>
+                <p class="service-desc">Bots entrenados con el conocimiento exacto de tu negocio que atienden clientes 24/7, analizan notas de voz y califican prospectos automáticamente.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📄</div>
+                <h3 class="service-title">Generación IA de Facturas y Contratos</h3>
+                <p class="service-desc">Redacción inteligente de propuestas comerciales corporativas y contratos de servicio listos para descargar o enviar al instante a tus clientes.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📅</div>
+                <h3 class="service-title">Sincronización Total con Calendar</h3>
+                <p class="service-desc">Agendamiento con un solo clic con recordatorios por WhatsApp y sincronización perfecta con tu calendario corporativo.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase Banner -->
+    <section id="impacto" class="showcase-banner">
+        <h2 style="font-size:2.5rem; font-weight:900; margin-bottom:1rem;">Respaldado por Resultados Comprobados</h2>
+        <p style="color:#888; font-size:1.15rem; max-width:700px; margin:0 auto;">Ecosistemas diseñados para las industrias de energía solar, bienestar e infraestructura en todo Puerto Rico y Estados Unidos.</p>
+        <div class="showcase-grid">
+            <div class="showcase-stat"><span class="stat-val">3+</span><span class="stat-lbl">Plataformas CRM Creadas</span></div>
+            <div class="showcase-stat"><span class="stat-val">100%</span><span class="stat-lbl">Propiedad de Datos del Cliente</span></div>
+            <div class="showcase-stat"><span class="stat-val">24/7</span><span class="stat-lbl">Operación de Bots IA</span></div>
+            <div class="showcase-stat"><span class="stat-val">15 d</span><span class="stat-lbl">Tiempo Rápido de Entrega</span></div>
+        </div>
+    </section>
+
+    <!-- Lead Capture Section -->
+    <section id="cotizar" class="capture-section">
+        <div class="capture-card">
+            <div class="capture-header">
+                <h2>Comienza tu Transformación Hoy</h2>
+                <p>Completa el formulario para recibir una evaluación gratuita de tus necesidades y una propuesta VIP a la medida.</p>
+            </div>
+            
+            <form id="hq-lead-form">
+                <div class="form-group">
+                    <label class="form-label">Nombre Completo o de tu Empresa *</label>
+                    <input type="text" id="lead-name" class="form-input" placeholder="Ej: Solar Innovations LLC / Ing. Carlos Mendoza" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono de WhatsApp (Para Alertas Directas) *</label>
+                    <input type="tel" id="lead-phone" class="form-input" placeholder="Ej: +1 787 555 0199" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico Corporativo</label>
+                    <input type="email" id="lead-email" class="form-input" placeholder="Ej: contacto@solarinnovations.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de Solución que Necesitas</label>
+                    <select id="lead-service" class="form-select">
+                        <option value="CRM Master Personalizado">🏰 CRM Master Personalizado (Gestión de Ventas y Embudos)</option>
+                        <option value="Agente IA Autónomo (WhatsApp / Telegram)">🤖 Agente IA Autónomo (WhatsApp / Telegram Bot)</option>
+                        <option value="Generador Inteligente de Propuestas y Contratos">📄 Generador Inteligente de Propuestas y Contratos</option>
+                        <option value="Automatización Integral de Procesos">⚡ Automatización Integral de Procesos (Make / Zapier)</option>
+                        <option value="Consultoría VIP en Inteligencia Artificial">💎 Consultoría VIP en Inteligencia Artificial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Detalles Adicionales y Presupuesto Estimado</label>
+                    <textarea id="lead-details" class="form-textarea" placeholder="Cuéntanos brevemente sobre los procesos que deseas automatizar o el alcance de tu proyecto..."></textarea>
+                </div>
+                <button type="submit" id="btn-submit-lead" class="btn-submit">🚀 Solicitar Evaluación y Propuesta VIP</button>
+            </form>
+
+            <div id="form-success-box" style="display: none;" class="success-card">
+                <div class="success-icon">🎉</div>
+                <h3 style="font-size: 2.2rem; font-weight: 900; color: #d4af37; margin-bottom: 1rem;">¡Solicitud Recibida Exitosamente!</h3>
+                <p style="color: #bbb; font-size: 1.1rem; max-width: 550px; margin: 0 auto 2.5rem; line-height: 1.6;">Tu información ha sido ingresada directamente en nuestro Master CRM HQ. Julio Varela se comunicará contigo a la brevedad para coordinar tu orientación VIP.</p>
+                <button id="btn-wa-connect" style="padding: 1.2rem 2.5rem; background: #25d366; color: #000; font-weight: 800; font-size: 1.1rem; border: none; border-radius: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 15px 30px rgba(37, 211, 102, 0.3);">
+                    📱 Conectar Ahora por WhatsApp con Julio
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 4rem 2rem; text-align: center; color: #555; font-size: 0.85rem;">
+        <p style="margin-bottom: 0.5rem; color: #888; font-weight: 600;">© 2026 MASTER CRM HQ & AI AGENCY. Todos los derechos reservados.</p>
+        <p>Desarrollo de Software Premium • Cero Costos Ocultos de Licencias • 100% Propiedad de Datos</p>
+    </footer>
+
+</body>
+</html>

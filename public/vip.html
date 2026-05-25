@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta VIP | Master CRM HQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { 
+            background: #080808; 
+            color: #ffffff; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 15%, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
+            overflow-x: hidden;
+        }
+        
+        .card-container {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(22, 22, 22, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 32px;
+            padding: 40px 28px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.1);
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        .gold-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #d4af37, #f9e29c);
+            color: #000;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            margin: 10px auto 20px;
+            border: 3px solid #d4af37;
+            padding: 4px;
+            background: #000;
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.25);
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        .bio-box {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .qr-box {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 24px;
+            display: inline-block;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15);
+        }
+        .qr-box img {
+            width: 200px;
+            height: 200px;
+            display: block;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 16px;
+            border: none;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37, #f9e29c);
+            color: #000;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-apple {
+            background: #000000;
+            color: #ffffff;
+            border: 1px solid #333;
+        }
+        .btn-apple:hover {
+            background: #111;
+            border-color: #d4af37;
+        }
+
+        .btn-wa {
+            background: #25D366;
+            color: #ffffff;
+        }
+        .btn-wa:hover {
+            background: #20ba59;
+        }
+
+        .btn-web {
+            background: #222222;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+        .btn-web:hover {
+            background: #333;
+            border-color: #888;
+        }
+
+        .footer-branding {
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .footer-branding span {
+            color: #d4af37;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <div class="gold-badge" id="badge-company">Master CRM HQ</div>
+        
+        <div class="avatar">
+            <img id="vip-avatar" src="/logo_jvarela.jpg" onerror="this.src='https://api.dicebear.com/7.x/initials/svg?seed=VIP&backgroundColor=d4af37&textColor=000000'" alt="Foto de Perfil">
+        </div>
+
+        <h1 id="vip-name">Julio Varela</h1>
+        <h2 id="vip-title">CEO & Experto en IA y Automatización</h2>
+
+        <div class="bio-box" id="vip-bio">
+            Transformando negocios con Inteligencia Artificial, Agentes Telefónicos Autónomos y Sistemas CRM de alto rendimiento.
+        </div>
+
+        <div class="qr-box">
+            <img id="vip-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https://master-crm-jvarela.web.app/vip.html&color=000000&bgcolor=ffffff&margin=10" alt="Código QR VIP">
+        </div>
+
+        <button class="btn-action btn-gold" onclick="downloadVCard()">
+            <span style="font-size: 1.3rem;">💾</span> Guardar en Contactos (vCard)
+        </button>
+
+        <button class="btn-action btn-apple" onclick="openAppleWallet()">
+            <span style="font-size: 1.3rem;"></span> Añadir a Apple Wallet
+        </button>
+
+        <a id="link-wa" href="https://wa.me/1787XXXXXXXX" target="_blank" class="btn-action btn-wa">
+            <span style="font-size: 1.3rem;">💬</span> Contactar por WhatsApp
+        </a>
+
+        <a id="link-web" href="https://master-crm-jvarela.web.app/" target="_blank" class="btn-action btn-web">
+            <span style="font-size: 1.3rem;">🌐</span> Visitar Portal Oficial
+        </a>
+
+        <div class="footer-branding">
+            Powered by <span>Master CRM HQ</span> & AI
+        </div>
+    </div>
+
+    <script>
+        // Objeto de datos por defecto
+        let cardData = {
+            name: "Julio Varela",
+            title: "CEO & Experto en IA y Automatización",
+            company: "Master CRM HQ",
+            phone: "+17875550199",
+            email: "jvarela2528@gmail.com",
+            web: window.location.origin,
+            bio: "Transformando negocios con Inteligencia Artificial, Agentes Telefónicos Autónomos y Sistemas CRM de alto rendimiento.",
+            avatar: "/logo_jvarela.jpg"
+        };
+
+        // Leer parámetros URL para hacer la tarjeta 100% dinámica
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('name')) cardData.name = params.get('name');
+        if (params.get('title')) cardData.title = params.get('title');
+        if (params.get('company')) cardData.company = params.get('company');
+        if (params.get('phone')) cardData.phone = params.get('phone');
+        if (params.get('email')) cardData.email = params.get('email');
+        if (params.get('web')) cardData.web = params.get('web');
+        if (params.get('bio')) cardData.bio = params.get('bio');
+        if (params.get('avatar')) cardData.avatar = params.get('avatar');
+
+        // Renderizar en la página
+        document.getElementById('vip-name').innerText = cardData.name;
+        document.getElementById('vip-title').innerText = cardData.title;
+        document.getElementById('badge-company').innerText = cardData.company;
+        document.getElementById('vip-bio').innerText = cardData.bio;
+        
+        if (cardData.avatar) {
+            document.getElementById('vip-avatar').src = cardData.avatar;
+        }
+
+        // Configurar enlaces
+        const cleanPhone = cardData.phone.replace(/[^0-9]/g, '');
+        document.getElementById('link-wa').href = `https://wa.me/${cleanPhone}`;
+        document.getElementById('link-web').href = cardData.web;
+
+        // Actualizar el QR al enlace de la tarjeta actual
+        const currentUrl = window.location.href;
+        document.getElementById('vip-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(currentUrl)}&color=000000&bgcolor=ffffff&margin=10`;
+
+        // Función para descargar archivo .VCF (vCard)
+        function downloadVCard() {
+            const vcfContent = `BEGIN:VCARD
+VERSION:3.0
+FN:${cardData.name}
+ORG:${cardData.company}
+TITLE:${cardData.title}
+TEL;TYPE=WORK,VOICE:${cardData.phone}
+EMAIL;TYPE=WORK:${cardData.email}
+URL:${cardData.web}
+NOTE:${cardData.bio}
+END:VCARD`;
+
+            const blob = new Blob([vcfContent], { type: "text/vcard;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${cardData.name.replace(/\s+/g, '_')}_Master_CRM.vcf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Función para Apple Wallet
+        function openAppleWallet() {
+            // Genera la tarjeta y da las instrucciones para Apple Wallet / Guardado en PWA
+            const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            if (isIos) {
+                alert(`🍏 Para añadir tu Tarjeta VIP a Apple Wallet:\n\n1. Toca el botón de Compartir [↑] en la parte inferior de Safari.\n2. Selecciona "Añadir a la pantalla de inicio".\n\nTu tarjeta funcionará como una aplicación nativa VIP en tu iPhone.`);
+            } else {
+                alert(`🌟 Tarjeta Digital VIP de Master CRM HQ\n\nEn dispositivos iOS, puedes guardar esta tarjeta directamente en tu pantalla de inicio o añadir el contacto con 1 clic usando el botón dorado de vCard.`);
+            }
+        }
+    </script>
+</body>
+</html>
