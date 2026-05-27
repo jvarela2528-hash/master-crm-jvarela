@@ -257,15 +257,24 @@
                     <p style="color:#888; font-size:0.95rem; margin-top:0.5rem;">Generación de anuncios premium para venta de CRMs, sistemas solares y soluciones de bienestar.</p>
                 </header>
                 
-                <div style="margin-bottom:2rem; display:flex; gap:12px; align-items:center;">
-                    <span style="font-size:0.85rem; color:#888;">Enfoque de Campaña:</span>
-                    <select id="ad-category-select" style="background:#111; color:#d4af37; border:1px solid #333; padding:8px 16px; border-radius:10px; font-size:0.85rem; font-weight:700; cursor:pointer;">
-                        <option value="Master CRM HQ">🏰 Master CRM HQ (Venta de CRMs & Agentes IA)</option>
-                        <option value="direct">☀️ Energía Solar Pro</option>
-                        <option value="hh-integral">💧 H&H Bienestar (Agua y Aire)</option>
-                        <option value="rainbow-pr">🌈 Rainbow PR</option>
-                        <option value="zendure-pr">⚡ Baterías Zendure</option>
-                    </select>
+                <div style="margin-bottom:2rem; display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <span style="font-size:0.85rem; color:#888;">Enfoque de Campaña:</span>
+                        <select id="ad-category-select" style="background:#111; color:#d4af37; border:1px solid #333; padding:8px 16px; border-radius:10px; font-size:0.85rem; font-weight:700; cursor:pointer;">
+                            <option value="Master CRM HQ">🏰 Master CRM HQ (Venta de CRMs & Agentes IA)</option>
+                            <option value="direct">☀️ Energía Solar Pro</option>
+                            <option value="hh-integral">💧 H&H Bienestar (Agua y Aire)</option>
+                            <option value="rainbow-pr">🌈 Rainbow PR</option>
+                            <option value="zendure-pr">⚡ Baterías Zendure</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <span style="font-size:0.85rem; color:#888;">🧠 Modelo IA:</span>
+                        <select id="ai-model-select" style="background:#111; color:#d4af37; border:1px solid #333; padding:8px 16px; border-radius:10px; font-size:0.85rem; font-weight:700; cursor:pointer;">
+                            <option value="gemini" selected>✨ Gemini 2.5 Flash</option>
+                            <option value="gpt">🧠 GPT-4o Mini (OpenAI)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="marketing-grid">
@@ -565,22 +574,31 @@
             <h2 style="color:#d4af37; margin-bottom:0.5rem; font-size:1.6rem; font-weight:800; display:flex; align-items:center; gap:10px;">✨ Asistente IA de Comunicación</h2>
             <p id="ai-comm-lead-name" style="color:#aaa; font-size:0.95rem; margin-bottom:2rem;"></p>
             
-            <div style="margin-bottom:1.8rem;">
-                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🎯 Objetivo del Mensaje</label>
-                <select id="ai-comm-objective" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
-                    <option value="Contacto inicial y presentación de servicios premium">👋 Contacto inicial y presentación de servicios premium</option>
-                    <option value="Seguimiento para agendar una orientación/demostración">📅 Seguimiento para agendar una orientación/demostración</option>
-                    <option value="Enviar propuesta de valor y cotización personalizada">📄 Enviar propuesta de valor y cotización personalizada</option>
-                    <option value="Resolver dudas y manejar objeciones de precio">💡 Resolver dudas y manejar objeciones de precio</option>
-                </select>
+            <div style="margin-bottom:1.8rem; display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;">
+                <div>
+                    <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🎯 Objetivo del Mensaje</label>
+                    <select id="ai-comm-objective" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
+                        <option value="Contacto inicial y presentación de servicios premium">👋 Contacto inicial</option>
+                        <option value="Seguimiento para agendar una orientación/demostración">📅 Seguimiento</option>
+                        <option value="Enviar propuesta de valor y cotización personalizada">📄 Enviar propuesta</option>
+                        <option value="Resolver dudas y manejar objeciones de precio">💡 Resolver dudas</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🗣️ Tono de Comunicación</label>
+                    <select id="ai-comm-tone" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
+                        <option value="Profesional, empático y muy natural">👔 Profesional y empático</option>
+                        <option value="Directo, persuasivo y enfocado en valor">⚡ Directo y persuasivo</option>
+                        <option value="Cálido, respetuoso y resolutivo">🤝 Cálido y respetuoso</option>
+                    </select>
+                </div>
             </div>
 
             <div style="margin-bottom:2rem;">
-                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🗣️ Tono de Comunicación</label>
-                <select id="ai-comm-tone" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
-                    <option value="Profesional, empático y muy natural">👔 Profesional, empático y muy natural</option>
-                    <option value="Directo, persuasivo y enfocado en valor">⚡ Directo, persuasivo y enfocado en valor</option>
-                    <option value="Cálido, respetuoso y resolutivo">🤝 Cálido, respetuoso y resolutivo</option>
+                <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">🤖 Cerebro IA</label>
+                <select id="ai-comm-model" style="width:100%; padding:1.2rem; background:#000; color:white; border:1px solid #333; border-radius:16px; outline:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
+                    <option value="gemini" selected>✨ Gemini 2.5 Flash</option>
+                    <option value="gpt">🧠 GPT-4o Mini (OpenAI)</option>
                 </select>
             </div>
 

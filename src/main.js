@@ -364,6 +364,8 @@ document.getElementById('btn-run-ai-comm')?.addEventListener('click', async () =
     const resultText = document.getElementById('ai-comm-result-text');
     const obj = document.getElementById('ai-comm-objective').value;
     const tone = document.getElementById('ai-comm-tone').value;
+    const modelSelect = document.getElementById('ai-comm-model');
+    const selectedModel = modelSelect ? modelSelect.value : 'gemini';
 
     btnRun.innerHTML = '✨ Redactando con IA...';
     btnRun.disabled = true;
@@ -373,7 +375,8 @@ document.getElementById('btn-run-ai-comm')?.addEventListener('click', async () =
         const res = await generateComm({ 
             prompt: `Destinatario: ${currentAICommLead.name}. Objetivo: ${obj}. Tono: ${tone}`, 
             type: 'text', 
-            clientId: 'master' 
+            clientId: 'master',
+            model: selectedModel
         });
         if (res.data?.error) {
             alert(`Error: ${res.data.error}`);
@@ -624,6 +627,9 @@ window.generateAIIdea = async (platform) => {
     const userPrompt = prompt(`¿Sobre qué aspecto de ${label} quieres enfocar el anuncio? (Ej: Embudos de venta automatizados con IA, Creación de Agentes para WhatsApp, Oferta VIP)`);
     if (!userPrompt) return;
 
+    const modelSelect = document.getElementById('ai-model-select');
+    const selectedModel = modelSelect ? modelSelect.value : 'gemini';
+
     const enrichedPrompt = `[Categoría: ${label}] [Link: https://master-crm-jvarela.web.app/] ${userPrompt}`;
     showVisualAlert(`Generando anuncio de ${label} con IA...`, "Motor Creativo IA");
 
@@ -635,14 +641,14 @@ window.generateAIIdea = async (platform) => {
 
     try {
         const genAI = httpsCallable(functions, 'generateAIAsset');
-        const resText = await genAI({ prompt: enrichedPrompt, type: 'text', clientId: 'master' });
+        const resText = await genAI({ prompt: enrichedPrompt, type: 'text', clientId: 'master', model: selectedModel });
         if (resText.data?.result && textEl) {
             const formatted = resText.data.result.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#d4af37; font-weight:bold; text-decoration:underline; display:inline-block; margin-top:6px;">🔗 Cotiza Gratis Aquí</a>');
             textEl.innerHTML = formatted;
             window.realCopies[platform] = resText.data.result;
         }
 
-        const resImg = await genAI({ prompt: enrichedPrompt, type: 'image', clientId: 'master' });
+        const resImg = await genAI({ prompt: enrichedPrompt, type: 'image', clientId: 'master', model: selectedModel });
         if (resImg.data?.result && imgEl) {
             imgEl.src = resImg.data.result;
             imgEl.onload = () => { imgEl.classList.remove('shimmer'); imgEl.style.opacity = '1'; };
